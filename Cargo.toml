@@ -1,0 +1,43 @@
+[package]
+name = "mdbook-content-collections"
+version = "0.1.0"
+edition = "2021"
+authors = ["T Sawyer saylesss88@github.com"]
+license = "Apache-2.0"
+description = "An mdBook preprocessor that provides Astro-like content collections with typed frontmatter, validation, and structured content indexing"
+repository = "https://github.com/saylesss88/mdbook-content-collections"
+readme = "README.md"
+keywords = [
+	"mdbook",
+	"content-collections",
+	"frontmatter",
+	"preprocessor",
+	"schema",
+]
+categories = ["command-line-utilities", "web-programming", "development-tools"]
+
+[lib]
+name = "mdbook_content_collections"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mdbook-content-collections"
+path = "src/bin/mdbook-content-collections.rs"
+
+[dependencies]
+clap = {version = "4", features = ["derive"]}
+anyhow = "1"
+walkdir = "2"
+serde = {version = "1", features = ["derive"]}
+serde_yaml = "0.9"
+chrono = {version = "0.4", features = ["serde"]}
+pulldown-cmark = "0.13"
+serde_json = "1"
+globset = "0.4"
+toml = "0.8"
+
+# Optional: keep for future RSS generation from the content index
+# rss = {version = "2", features = ["builders"], optional = true}
+
+# [features]
+# rss = ["dep:rss"]

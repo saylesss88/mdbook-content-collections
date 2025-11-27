@@ -188,44 +188,106 @@ We can take advantage of this generated `content-collections.json` to show a
 rendered preview of your last modified content. This is just an example and not
 production ready but pretty cool nonetheless.
 
-“Extend your `theme/index.hbs`, scroll down to the bottom and add this block
-right above the closing `</body>` (after the last `{{/if}}` in the document).”
+Extend your `theme/index.hbs` scroll down near the bottom and add this block
 
-More code shown here for context
+Find the following code block near line 270 in `index.hbs`:
 
-```hbs
-<div id="content-collections-list" class="content-collections-list">
-  <!-- Populated by mdbook-content-collections -->
-</div>
+```js
+                {{#if next}}
+                    <a rel="next prefetch" href="{{ path_to_root }}{{next.link}}" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        {{#if (eq text_direction "rtl")}}
+                        {{fa "solid" "angle-left"}}
+                        {{else}}
+                        {{fa "solid" "angle-right"}}
+                        {{/if}}
+                    </a>
+                {{/if}}
+            </nav>
 
-<script>
-  (function () { var indexUrl = window.location.origin +
-  window.location.pathname.replace(/\/[^\/]*$/, '') +
-  '/content-collections.json'; if (window.location.protocol === 'file:') {
-  indexUrl = 'content-collections.json'; } fetch(indexUrl) .then(function (res)
-  { if (!res.ok) throw new Error('Failed to load content-collections.json');
-  return res.json(); }) .then(function (data) { if (!data ||
-  !Array.isArray(data.entries)) return; var container =
-  document.getElementById('content-collections-list'); if (!container) return;
-  var entries = data.entries .filter(function (e) { return !e.draft &&
-  (!e.collection || e.collection === 'blog'); }) .slice(0, 10); if
-  (entries.length === 0) { container.textContent = 'No posts yet.'; return; }
-  var list = document.createElement('ul'); list.className =
-  'content-collections-items'; entries.forEach(function (e) { var li =
-  document.createElement('li'); li.className = 'content-collections-item'; var
-  link = document.createElement('a'); var htmlPath =
-  e.path.replace(/\.md(?:own|arkdown)?$/i, '.html'); link.href = htmlPath;
-  link.textContent = e.title || e.path; var meta =
-  document.createElement('div'); meta.className = 'content-collections-meta'; if
-  (e.date) { var d = new Date(e.date); meta.textContent =
-  d.toISOString().slice(0, 10); } var preview = document.createElement('div');
-  preview.className = 'content-collections-preview'; preview.innerHTML =
-  e.preview_html || ''; li.appendChild(link); if (meta.textContent)
-  li.appendChild(meta); li.appendChild(preview); list.appendChild(li); });
-  container.innerHTML = ''; container.appendChild(list); }) .catch(function
-  (err) { console.warn('mdbook-content-collections:', err); }); })();
-</script>
+//           ### <div id="content-collections-list">
 ```
+
+And place the following code right below the above code block.
+
+```js
+        <div id="content-collections-list" class="content-collections-list">
+          <!-- Populated by mdbook-content-collections -->
+        </div>
+
+         <script>
+          (function () {
+            var indexUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/content-collections.json';
+
+            if (window.location.protocol === 'file:') {
+              indexUrl = 'content-collections.json';
+            }
+
+            fetch(indexUrl)
+              .then(function (res) {
+                if (!res.ok) throw new Error('Failed to load content-collections.json');
+                return res.json();
+              })
+              .then(function (data) {
+                if (!data || !Array.isArray(data.entries)) return;
+
+                var container = document.getElementById('content-collections-list');
+                if (!container) return;
+
+                var entries = data.entries
+                  .filter(function (e) {
+                    return !e.draft && (!e.collection || e.collection === 'blog');
+                  })
+                  .slice(0, 10);
+
+                if (entries.length === 0) {
+                  container.textContent = 'No posts yet.';
+                  return;
+                }
+
+                var list = document.createElement('ul');
+                list.className = 'content-collections-items';
+
+                entries.forEach(function (e) {
+                  var li = document.createElement('li');
+                  li.className = 'content-collections-item';
+
+                  var link = document.createElement('a');
+                  var htmlPath = e.path.replace(/\.md(?:own|arkdown)?$/i, '.html');
+                  link.href = htmlPath;
+                  link.textContent = e.title || e.path;
+
+                  var meta = document.createElement('div');
+                  meta.className = 'content-collections-meta';
+
+                  if (e.date) {
+                    var d = new Date(e.date);
+                    meta.textContent = d.toISOString().slice(0, 10);
+                  }
+
+                  var preview = document.createElement('div');
+                  preview.className = 'content-collections-preview';
+                  preview.innerHTML = e.preview_html || '';
+
+                  li.appendChild(link);
+                  if (meta.textContent) li.appendChild(meta);
+                  li.appendChild(preview);
+                  list.appendChild(li);
+                });
+
+                container.innerHTML = '';
+                container.appendChild(list);
+              })
+              .catch(function (err) {
+                console.warn('mdbook-content-collections:', err);
+              });
+          })();
+        </script>
+// --snip--
+```
+
+Now, your books landing page will have an extension below the prev-next chapter
+buttons showing a rendered list/overview of your last modified content. Taken
+from the generated `content-collections.json`
 
 ### License
 

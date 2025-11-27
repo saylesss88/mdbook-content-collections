@@ -3,37 +3,49 @@
 **Astro-style Content Collections for mdBook — zero JavaScript, pure Rust,
 blazing fast.**
 
-Bring the joy of
+Bring the utility of
 [Astro's Content Collections](https://docs.astro.build/en/guides/content-collections/)
 to your mdBook projects. Automatically discover, parse, sort, and index all your
-Markdown files with rich frontmatter — including previews, tags, collections,
-drafts, and more — and get a single `content-collections.json` file in your
-built book.
+Markdown files with rich frontmatter, including previews, tags, collections,
+drafts, and more, and get a single `content-collections.json` file in your built
+book.
 
 Perfect for blogs, documentation sites, personal wikis, or any mdBook project
 that needs a structured content index for dynamic themes, search, filtering, or
 RSS enhancements.
 
-Example frontmatter:
+Example frontmatter (The first 10 lines shown for 2 chapters):
 
 ```md
 ---
 title: Unencrypted BTRFS Impermanence with Flakes
-date: 2025-11-24
+date: 2025-11-27
 author: saylesss88
 collection: blog
 tags: ["nixos", "btrfs", "impermanence"]
 draft: false
 ---
-
-# Unencrypted BTRFS Impermanence with Flakes
 ```
 
-And this is the generated `json`:
+And this is the generated `json` output, showing the above chapters for context:
 
 ```json
 {
   "entries": [
+    {
+      "author": "saylesss88",
+      "collection": "blog",
+      "date": "2025-11-27T00:00:00+00:00",
+      "description": null,
+      "draft": false,
+      "path": "Nix_Pull_Requests_11.md",
+      "preview_html": "<p><img src=\"images/gruv16.png\" alt=\"gruv16\" /></p><p><strong>Pull requests</strong> communicate changes...</p>",
+      "tags": [
+        "nixos",
+        "nixpkgs"
+      ],
+      "title": "Nix Pull Requests"
+    },
     {
       "author": "saylesss88",
       "collection": "blog",
@@ -49,7 +61,7 @@ And this is the generated `json`:
       ],
       "title": "Unencrypted BTRFS Impermanence with Flakes"
     },
-## --snip--- ##
+# --snip-- #
 ```
 
 Your theme or external tools can then consume this index to build blog listings,
@@ -167,15 +179,59 @@ content. This crate closes that gap. No more hardcoding post lists. No more
 fragile JS scraping. Just write Markdown with frontmatter, and get a powerful
 content API for free.
 
+### Example: “Latest posts” preview on your landing page
+
+<details>
+<summary> ✔️ Click to Expand Example Usage </summary>
+
+We can take advantage of this generated `content-collections.json` to show a
+rendered preview of your last modified content. This is just an example and not
+production ready but pretty cool nonetheless.
+
+“Extend your `theme/index.hbs`, scroll down to the bottom and add this block
+right above the closing `</body>` (after the last `{{/if}}` in the document).”
+
+More code shown here for context
+
+```hbs
+<div id="content-collections-list" class="content-collections-list">
+  <!-- Populated by mdbook-content-collections -->
+</div>
+
+<script>
+  (function () { var indexUrl = window.location.origin +
+  window.location.pathname.replace(/\/[^\/]*$/, '') +
+  '/content-collections.json'; if (window.location.protocol === 'file:') {
+  indexUrl = 'content-collections.json'; } fetch(indexUrl) .then(function (res)
+  { if (!res.ok) throw new Error('Failed to load content-collections.json');
+  return res.json(); }) .then(function (data) { if (!data ||
+  !Array.isArray(data.entries)) return; var container =
+  document.getElementById('content-collections-list'); if (!container) return;
+  var entries = data.entries .filter(function (e) { return !e.draft &&
+  (!e.collection || e.collection === 'blog'); }) .slice(0, 10); if
+  (entries.length === 0) { container.textContent = 'No posts yet.'; return; }
+  var list = document.createElement('ul'); list.className =
+  'content-collections-items'; entries.forEach(function (e) { var li =
+  document.createElement('li'); li.className = 'content-collections-item'; var
+  link = document.createElement('a'); var htmlPath =
+  e.path.replace(/\.md(?:own|arkdown)?$/i, '.html'); link.href = htmlPath;
+  link.textContent = e.title || e.path; var meta =
+  document.createElement('div'); meta.className = 'content-collections-meta'; if
+  (e.date) { var d = new Date(e.date); meta.textContent =
+  d.toISOString().slice(0, 10); } var preview = document.createElement('div');
+  preview.className = 'content-collections-preview'; preview.innerHTML =
+  e.preview_html || ''; li.appendChild(link); if (meta.textContent)
+  li.appendChild(meta); li.appendChild(preview); list.appendChild(li); });
+  container.innerHTML = ''; container.appendChild(list); }) .catch(function
+  (err) { console.warn('mdbook-content-collections:', err); }); })();
+</script>
+```
+
 ### License
 
 Apache-2.0
 
-### Author
-
-saylesss88 — proudly built with Rust and too much coffee.
-
 Inspired by
 [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
-· Powered by pulldown-cmark · Works great with mdbook-rss-feed and
-mdbook-frontmatter-strip
+· Powered by [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark)
+· Works great with mdbook-rss-feed and mdbook-frontmatter-strip

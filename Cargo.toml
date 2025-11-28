@@ -1,7 +1,7 @@
 [package]
 name = "mdbook-content-collections"
-version = "0.1.3"
-edition = "2024"
+version = "0.1.4"
+edition = "2021"
 authors = ["T Sawyer saylesss88@github.com"]
 license = "Apache-2.0"
 description = "An mdBook preprocessor that provides Astro-like content collections with typed frontmatter, validation, and structured content indexing"

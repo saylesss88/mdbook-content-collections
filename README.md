@@ -181,8 +181,14 @@ content API for free.
 
 ### Example: “Latest posts” preview on your landing page
 
+If you want a zero‑fetch setup, pair this crate with the companion preprocessor
+[mdbook-content-loader](https://crates.io/crates/mdbook-content-loader). That
+preprocessor reads the generated `content-collections.json` at build time and
+injects it into every page as `window.CONTENT_COLLECTIONS`, so your theme JS can
+render widgets without any extra HTTP requests.
+
 <details>
-<summary> ✔️ Click to Expand Example Usage </summary>
+<summary> ✔️ Click to Expand Example standalone Usage </summary>
 
 We can take advantage of this generated `content-collections.json` to show a
 rendered preview of your last modified content. This is just an example and not
@@ -193,95 +199,95 @@ Extend your `theme/index.hbs` scroll down near the bottom and add this block
 Find this code block near line 270 in `index.hbs`:
 
 ```js
-                {{#if next}}
-                    <a rel="next prefetch" href="{{ path_to_root }}{{next.link}}" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        {{#if (eq text_direction "rtl")}}
-                        {{fa "solid" "angle-left"}}
-                        {{else}}
-                        {{fa "solid" "angle-right"}}
-                        {{/if}}
-                    </a>
-                {{/if}}
-            </nav>
+      {{#if next}}
+          <a rel="next prefetch" href="{{ path_to_root }}{{next.link}}" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+              {{#if (eq text_direction "rtl")}}
+              {{fa "solid" "angle-left"}}
+              {{else}}
+              {{fa "solid" "angle-right"}}
+              {{/if}}
+          </a>
+      {{/if}}
+  </nav>
 
-//           ### <div id="content-collections-list">
+//    ### <div id="content-collections-list">
 ```
 
 And place the following code right below the above code block.
 
 ```js
-        <div id="content-collections-list" class="content-collections-list">
-          <!-- Populated by mdbook-content-collections -->
-        </div>
+  <div id="content-collections-list" class="content-collections-list">
+    <!-- Populated by mdbook-content-collections -->
+  </div>
 
-         <script>
-          (function () {
-            var indexUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/content-collections.json';
+   <script>
+    (function () {
+      var indexUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/content-collections.json';
 
-            if (window.location.protocol === 'file:') {
-              indexUrl = 'content-collections.json';
+      if (window.location.protocol === 'file:') {
+        indexUrl = 'content-collections.json';
+      }
+
+      fetch(indexUrl)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Failed to load content-collections.json');
+          return res.json();
+        })
+        .then(function (data) {
+          if (!data || !Array.isArray(data.entries)) return;
+
+          var container = document.getElementById('content-collections-list');
+          if (!container) return;
+
+          var entries = data.entries
+            .filter(function (e) {
+              return !e.draft && (!e.collection || e.collection === 'blog');
+            })
+            .slice(0, 10);
+
+          if (entries.length === 0) {
+            container.textContent = 'No posts yet.';
+            return;
+          }
+
+          var list = document.createElement('ul');
+          list.className = 'content-collections-items';
+
+          entries.forEach(function (e) {
+            var li = document.createElement('li');
+            li.className = 'content-collections-item';
+
+            var link = document.createElement('a');
+            var htmlPath = e.path.replace(/\.md(?:own|arkdown)?$/i, '.html');
+            link.href = htmlPath;
+            link.textContent = e.title || e.path;
+
+            var meta = document.createElement('div');
+            meta.className = 'content-collections-meta';
+
+            if (e.date) {
+              var d = new Date(e.date);
+              meta.textContent = d.toISOString().slice(0, 10);
             }
 
-            fetch(indexUrl)
-              .then(function (res) {
-                if (!res.ok) throw new Error('Failed to load content-collections.json');
-                return res.json();
-              })
-              .then(function (data) {
-                if (!data || !Array.isArray(data.entries)) return;
+            var preview = document.createElement('div');
+            preview.className = 'content-collections-preview';
+            preview.innerHTML = e.preview_html || '';
 
-                var container = document.getElementById('content-collections-list');
-                if (!container) return;
+            li.appendChild(link);
+            if (meta.textContent) li.appendChild(meta);
+            li.appendChild(preview);
+            list.appendChild(li);
+          });
 
-                var entries = data.entries
-                  .filter(function (e) {
-                    return !e.draft && (!e.collection || e.collection === 'blog');
-                  })
-                  .slice(0, 10);
-
-                if (entries.length === 0) {
-                  container.textContent = 'No posts yet.';
-                  return;
-                }
-
-                var list = document.createElement('ul');
-                list.className = 'content-collections-items';
-
-                entries.forEach(function (e) {
-                  var li = document.createElement('li');
-                  li.className = 'content-collections-item';
-
-                  var link = document.createElement('a');
-                  var htmlPath = e.path.replace(/\.md(?:own|arkdown)?$/i, '.html');
-                  link.href = htmlPath;
-                  link.textContent = e.title || e.path;
-
-                  var meta = document.createElement('div');
-                  meta.className = 'content-collections-meta';
-
-                  if (e.date) {
-                    var d = new Date(e.date);
-                    meta.textContent = d.toISOString().slice(0, 10);
-                  }
-
-                  var preview = document.createElement('div');
-                  preview.className = 'content-collections-preview';
-                  preview.innerHTML = e.preview_html || '';
-
-                  li.appendChild(link);
-                  if (meta.textContent) li.appendChild(meta);
-                  li.appendChild(preview);
-                  list.appendChild(li);
-                });
-
-                container.innerHTML = '';
-                container.appendChild(list);
-              })
-              .catch(function (err) {
-                console.warn('mdbook-content-collections:', err);
-              });
-          })();
-        </script>
+          container.innerHTML = '';
+          container.appendChild(list);
+        })
+        .catch(function (err) {
+          console.warn('mdbook-content-collections:', err);
+        });
+    })();
+  </script>
 // --snip--
 ```
 
@@ -326,7 +332,7 @@ var entries = data.entries
 ```
 
 Change `blog` to what is needed for your setup. (i.e., what you want to track
-out of your frontmatter tags)
+out of your frontmatter keys)
 
 </details>
 
@@ -337,4 +343,5 @@ Apache-2.0
 Inspired by
 [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
 · Powered by [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark)
-· Works great with mdbook-rss-feed and mdbook-frontmatter-strip
+· Works great with mdbook-rss-feed, mdbook-frontmatter-strip, and
+mdbook-content-loader.

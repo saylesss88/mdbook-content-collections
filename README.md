@@ -1,6 +1,6 @@
 # mdbook-content-collections
 
-**Astro-style Content Collections for mdBook — zero JavaScript, pure Rust,
+**Astro-style Content Collections for mdBook, zero JavaScript, pure Rust,
 blazing fast.**
 
 Bring the utility of
@@ -14,7 +14,7 @@ Perfect for blogs, documentation sites, personal wikis, or any mdBook project
 that needs a structured content index for dynamic themes, search, filtering, or
 RSS enhancements.
 
-Example frontmatter (The first 10 lines shown for 2 chapters):
+Example frontmatter:
 
 ```md
 ---
@@ -73,7 +73,7 @@ No extra build system. No Node.js. Just Rust + mdBook.
 
 - Full frontmatter parsing (YAML)
 
-- Smart date parsing (2025-11-24 or RFC3339)
+- Smart date parsing (`2025-11-24` or RFC3339)
 
 - Fallback to file modification time
 
@@ -83,13 +83,13 @@ No extra build system. No Node.js. Just Rust + mdBook.
 
 - Supports collection, tags, draft, author, description
 
-- Draft filtering (draft: true → excluded in production if you filter)
+- Draft filtering (`draft: true` → excluded in production if you filter)
 
 - Sorted newest first
 
-- Outputs content-collections.json directly into your built book
+- Outputs `content-collections.json` directly into your built book
 
-- Works as a standalone mdBook preprocessor (just drop in book.toml)
+- Works as a standalone mdBook preprocessor (just drop in `book.toml`)
 
 ## Installation
 
@@ -133,22 +133,6 @@ https://your-site/content-collections.json
 Outputs `content-collections.json` directly into your built book. (i.e.,
 `src/content-collections.json`, and `book/content-collections.json`)
 
-## Frontmatter Example
-
-```yaml
----
-title: My Awesome Post
-date: 2025-11-24
-author: saylesss88
-description: A short summary (optional)
-collection: blog
-tags: ["nixos", "rust", "mdbook"]
-draft: false
----
-```
-
-All fields are optional except `title` (falls back to filename).
-
 ### Use Cases
 
 - Blog post listings
@@ -174,7 +158,7 @@ See:
 ### Why This Exists
 
 Astro made content fun again. mdBook is amazing for documentation and long-form
-writing — but until now, it lacked a first-class way to query and list your
+writing. But until now, it lacked a first-class way to query and list your
 content. This crate closes that gap. No more hardcoding post lists. No more
 fragile JS scraping. Just write Markdown with frontmatter, and get a powerful
 content API for free.
@@ -186,6 +170,8 @@ If you want a zero‑fetch setup, pair this crate with the companion preprocesso
 preprocessor reads the generated `content-collections.json` at build time and
 injects it into every page as `window.CONTENT_COLLECTIONS`, so your theme JS can
 render widgets without any extra HTTP requests.
+
+---
 
 <details>
 <summary> ✔️ Click to Expand Example standalone Usage </summary>
@@ -335,6 +321,19 @@ Change `blog` to what is needed for your setup. (i.e., what you want to track
 out of your frontmatter keys)
 
 </details>
+
+---
+
+## Project built using `mdbook-content-collections`
+
+[`mdbook-kanagawa-theme`](https://crates.io/crates/mdbook-kanagawa-theme) shows
+how to use `content-collections.json` to drive a dynamic landing page: it reads
+the generated collections, builds cards for posts/notes based on frontmatter,
+and injects them into `index.md`. All of the wiring (JS, HTML, CSS) lives in the
+preprocessor and theme, so you can get a “Latest posts” layout without editing
+`theme/index.hbs` yourself.
+
+---
 
 ### License
 

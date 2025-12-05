@@ -333,6 +333,8 @@ and injects them into `index.md`. All of the wiring (JS, HTML, CSS) lives in the
 preprocessor and theme, so you can get a “Latest posts” layout without editing
 `theme/index.hbs` yourself.
 
+![mdbook-kanagawa](assets/swappy-20251205-072621.cleaned.png)
+
 ---
 
 ### License

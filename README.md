@@ -61,13 +61,16 @@ And this is the generated `json` output, showing a few chapters for context:
       ],
       "title": "Unencrypted BTRFS Impermanence with Flakes"
     },
-# --snip-- #
 ```
+
+_Example truncated for brevity_
 
 Your theme or external tools can then consume this index to build blog listings,
 tag pages, feeds, or search indexes.​​
 
 No extra build system. No Node.js. Just Rust + mdBook.
+
+---
 
 ## Features
 
@@ -90,6 +93,8 @@ No extra build system. No Node.js. Just Rust + mdBook.
 - Outputs `content-collections.json` directly into your built book
 
 - Works as a standalone mdBook preprocessor (just drop in `book.toml`)
+
+---
 
 ## Installation
 
@@ -133,6 +138,8 @@ https://your-site/content-collections.json
 Outputs `content-collections.json` directly into your built book. (i.e.,
 `src/content-collections.json`, and `book/content-collections.json`)
 
+---
+
 ### Use Cases
 
 - Blog post listings
@@ -150,10 +157,14 @@ Outputs `content-collections.json` directly into your built book. (i.e.,
 
 - Theme-powered collections (e.g. /blog, /notes, /til)
 
+---
+
 ### Remove frontmatter from rendered HTML
 
 See:
 [mdbook-frontmatter-strip](https://crates.io/crates/mdbook-frontmatter-strip)
+
+---
 
 ### Why This Exists
 
@@ -162,6 +173,8 @@ writing. But until now, it lacked a first-class way to query and list your
 content. This crate closes that gap. No more hardcoding post lists. No more
 fragile JS scraping. Just write Markdown with frontmatter, and get a powerful
 content API for free.
+
+---
 
 ### Example: “Latest posts” preview on your landing page
 
@@ -194,9 +207,8 @@ Find this code block near line 270 in `index.hbs`:
               {{/if}}
           </a>
       {{/if}}
-  </nav>
 
-//    ### <div id="content-collections-list">
+//    ### <div id="content-collections-list" class="content-collections-list">
 ```
 
 And place the following code right below the above code block.
@@ -295,13 +307,13 @@ and injects them into `index.md`. All of the wiring (JS, HTML, CSS) lives in the
 preprocessor and theme, so you can get a “Latest posts” layout without editing
 `theme/index.hbs` yourself.
 
-![mdbook-kanagawa](assets/swappy-20251205-072621.cleaned.png)
+![mdbook-kanagawa](https://raw.githubusercontent.com/saylesss88/mdbook-content-collections/main/assets/swappy-20251205-072621.cleaned.png)
 
 ---
 
 ### License
 
-Apache-2.0
+[Apache License 2.0](https://github.com/saylesss88/mdbook-content-collections/blob/main/LICENSE)
 
 Inspired by
 [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)

@@ -1,8 +1,8 @@
 [package]
 name = "mdbook-content-collections"
-version = "0.1.5"
+version = "0.1.7"
 edition = "2024"
-authors = ["T Sawyer saylesss88@github.com"]
+authors = ["T. Sawyer saylesss88@github.com"]
 license = "Apache-2.0"
 description = "An mdBook preprocessor that provides Astro-like content collections with typed frontmatter, validation, and structured content indexing"
 repository = "https://github.com/saylesss88/mdbook-content-collections"
@@ -12,9 +12,12 @@ keywords = [
 	"content-collections",
 	"frontmatter",
 	"preprocessor",
-	"schema",
+	"blog",
 ]
 categories = ["command-line-utilities", "web-programming", "development-tools"]
+homepage = "https://github.com/saylesss88/mdbook-rss-feed"
+documentation = "https://docs.rs/mdbook-rss-feed"
+exclude = [".github/*", ".gitignore", "book/*"]
 
 [lib]
 name = "mdbook_content_collections"

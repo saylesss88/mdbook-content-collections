@@ -108,6 +108,8 @@ Version Check:
 mdbook-content-collections --version
 ```
 
+---
+
 ## Usage
 
 Add to your `book.toml`:
@@ -137,6 +139,132 @@ https://your-site/content-collections.json
 
 Outputs `content-collections.json` directly into your built book. (i.e.,
 `src/content-collections.json`, and `book/content-collections.json`)
+
+## Frontmatter expectations
+
+<details>
+<summary> ✔️ Frontmatter Expectations </summary>
+
+Each chapter you want to index must use YAML frontmatter at the top of the file:
+
+```md
+---
+title: "My first post"
+date: 2025-12-07
+author: "Jane Doe"
+description: "Short summary shown in lists."
+collection: "blog"
+tags:
+  - rust
+  - mdbook
+draft: false
+---
+
+# My first post
+
+Body content…
+```
+
+You can also use `tags: ["rust", "mdbook"]` if you prefer this syntax.
+
+The frontmatter is mapped to this struct:
+
+```rs
+pub struct FrontMatter {
+    pub title: String,
+    pub date: Option<DateTime<Utc>>,
+    pub author: Option<String>,
+    pub description: Option<String>,
+    pub collection: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub draft: Option<bool>,
+}
+```
+
+**Required vs Optional**
+
+- `title` (required)
+  - If parsing fails or there is no frontmatter, title falls back to the file
+    stem (e.g. `posts/hello-world.md` → `"hello-world"`)
+
+- `date` (optional but strongly recommended)
+  - Accepted formats:
+    - Full RFC 3339, for example `2025-12-07T10:30:00Z`
+    - Simple data `YYYY-MM-DD`, for example `2025-12-07`
+  - If `date` is missing or invalid, the file's modification time is used
+    instead (if available)
+  - Entries are sorted newest -> oldest by this value.
+
+- `author` (optional)
+  - Free-form string, passed through as-is into `ContentEntry.author`
+
+- `description` (optional)
+  - Short summary you want to prefer for previews
+  - If missing, the body text is used instead when generating `preview_html`
+
+- `collection` (optional)
+  - Free‑form bucket name such as `"blog"`, `"notes"`, `"changelog"`.
+
+  - Used downstream to group entries (for example into `collections.blog` or
+    `collections.notes` on the loader side).​
+
+  - If omitted, the entry just has collection: null in JSON.
+
+- `tags` (optional)
+  - YAML array of strings, for example `tags: ["rust", "mdbook"]`.
+
+  - Missing tags become an empty `[]` in the JSON.​
+
+- `draft` (optional)
+  - Boolean flag `true` / `false`.
+
+  - The index JSON includes `draft` as given; consumers like
+    `mdbook-content-loader` can filter out `draft: true` entries before
+    rendering.​
+
+---
+
+**Behavior with missing or invalid frontmatter**
+
+If the YAML frontmatter is missing or cannot be parsed, the file is still
+indexed with sensible defaults:
+
+- `title`: file stem.
+
+- `date`: file modification time (if available), otherwise null.
+
+- `author`: null.
+
+- `description`: full markdown body.
+
+- `collection`: null.
+
+- `tags`: `[]`.
+
+- `draft`: `false`.​
+
+The generated `content-collections.json` has one entries array, where each entry
+is:
+
+```json
+{
+  "path": "relative/path.md",
+  "title": "...",
+  "date": "2025-12-07T00:00:00Z",
+  "author": "Jane Doe",
+  "description": "Short summary...",
+  "collection": "blog",
+  "tags": ["rust", "mdbook"],
+  "draft": false,
+  "preview_html": "<p>First paragraphs of the body…</p>"
+}
+```
+
+`preview_html` is automatically derived from the markdown body: leading
+boilerplate (title, TOC‑like blocks) is stripped, then up to the first 3
+paragraphs / 800 characters are rendered to HTML.​
+
+</details>
 
 ---
 

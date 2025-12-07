@@ -274,53 +274,13 @@ And place the following code right below the above code block.
         });
     })();
   </script>
-// --snip--
 ```
 
-Now, your books landing page will have an extension below the prev-next chapter
+Now, your books landing page will have an extension above the prev-next chapter
 buttons showing a rendered list/overview of your last modified content. Taken
 from the generated `content-collections.json`:
 
 ![content-collections](https://raw.githubusercontent.com/saylesss88/mdbook-content-collections/main/assets/content-collections.png)
-
-> ❗️ NOTE: Handlebars is just a templating language: the `{{...}}` bits are
-> placeholders and helpers that get filled in when the book is rendered, and the
-> surrounding HTML can be rearranged like any normal markup. You can move the
-> above snippet anywhere in the `index.hbs` to change the "latest posts" snippet
-> to a new location. To make it smaller and better for phones, you can move it
-> somewhere higher. For example, if you move the snippet to just below:
->
-> ```js
->  <nav class="nav-wrapper" aria-label="Page navigation">
->      <!-- Mobile navigation buttons -->
->      {{#if previous}}
->          <a rel="prev" href="{{ path_to_root }}{{previous.link}}" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
->              {{#if (eq ../text_direction "rtl")}}
->              {{fa "solid" "angle-right"}}
->              {{else}}
->              {{fa "solid" "angle-left"}}
->              {{/if}}
->          </a>
->      {{/if}}
->
-> //     ### <div id="content-collections-list">
-> ```
->
-> The "latest posts" snippet will be placed just above the prev-next buttons,
-> within the book.
-
-Also notice that within the snippet is a block:
-
-```js
-var entries = data.entries
-  .filter(function (e) {
-    return !e.draft && (!e.collection || e.collection === "blog");
-  })
-  .slice(0, 10);
-```
-
-Change `blog` to what is needed for your setup. (i.e., what you want to track
-out of your frontmatter keys)
 
 </details>
 

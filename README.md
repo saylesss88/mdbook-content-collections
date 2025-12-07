@@ -326,20 +326,13 @@ Extend your `theme/index.hbs` scroll down near the bottom and add this block
 Find this code block near line 270 in `index.hbs`:
 
 ```js
-      {{#if next}}
-          <a rel="next prefetch" href="{{ path_to_root }}{{next.link}}" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-              {{#if (eq text_direction "rtl")}}
-              {{fa "solid" "angle-left"}}
-              {{else}}
-              {{fa "solid" "angle-right"}}
-              {{/if}}
-          </a>
-      {{/if}}
-
-//    ### <div id="content-collections-list" class="content-collections-list">
+<main>
+    {{{ content }}}
+    <!-- place "latest-posts" snippet here-- >
+</main>
 ```
 
-And place the following code right below the above code block.
+And place the following code right below `{{{ content }}}`:
 
 ```js
   <div id="content-collections-list" class="content-collections-list">

@@ -279,7 +279,9 @@ And place the following code right below the above code block.
 
 Now, your books landing page will have an extension below the prev-next chapter
 buttons showing a rendered list/overview of your last modified content. Taken
-from the generated `content-collections.json`
+from the generated `content-collections.json`:
+
+![content-collections](https://raw.githubusercontent.com/saylesss88/mdbook-content-collections/main/assets/content-collections.png)
 
 > ❗️ NOTE: Handlebars is just a templating language: the `{{...}}` bits are
 > placeholders and helpers that get filled in when the book is rendered, and the

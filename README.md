@@ -321,14 +321,15 @@ We can take advantage of this generated `content-collections.json` to show a
 rendered preview of your last modified content. This is just an example and not
 production ready but pretty cool nonetheless.
 
-Extend your `theme/index.hbs` scroll down near the bottom and add this block
+Extend your `theme/index.hbs` scroll down and find the `<main>` element and
+place the "content-collections-list" within it.
 
-Find this code block near line 270 in `index.hbs`:
+Find this code block in `index.hbs`:
 
 ```js
 <main>
     {{{ content }}}
-    <!-- place "latest-posts" snippet here-- >
+    <!-- place "content-collections-list" snippet here-- >
 </main>
 ```
 

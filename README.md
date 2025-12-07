@@ -413,7 +413,7 @@ Now, your books landing page will have an extension above the prev-next chapter
 buttons showing a rendered list/overview of your last modified content. Taken
 from the generated `content-collections.json`:
 
-![content-collections](https://raw.githubusercontent.com/saylesss88/mdbook-content-collections/main/assets/content-collections.png)
+![content-collections](https://raw.githubusercontent.com/saylesss88/mdbook-content-collections/main/assets/content-collections2.png)
 
 </details>
 
